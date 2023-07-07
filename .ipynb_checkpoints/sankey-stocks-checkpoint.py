@@ -1,4 +1,5 @@
 import pandas as pd
+import matplotlib
 from floweaver import *
 
 """
@@ -47,4 +48,22 @@ nodes = {
 ordering = [["embark_port"], ["disembark_port"]]
 bundles = [Bundle("embark_port", "disembark_port")]
 sdd = SankeyDefinition(nodes, bundles, ordering)
-weave(sdd, flows).to_widget()
+
+# Create partitions for each type of port
+embark_port = Partition.Simple("process", flows["source"].unique().tolist())
+disembark_port = Partition.Simple("process", flows["target"].unique().tolist())
+
+nodes["embark_port"].partition = embark_port
+nodes["disembark_port"].partition = disembark_port
+
+"""
+In the diagram:
+
+The nodes on the left represent different embark ports.
+The nodes on the right represent different disembark ports.
+The line shows the travel path of the cruise from one port to another port.
+The thicker a line is, the more expensive the trip is.
+"""
+
+# Create Sankey diagram
+weave(sdd, flows, link_color=QuantitativeScale("value")).to_widget()

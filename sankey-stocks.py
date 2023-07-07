@@ -1,5 +1,4 @@
 import pandas as pd
-import matplotlib
 from floweaver import *
 
 """
@@ -66,4 +65,5 @@ The thicker a line is, the more expensive the trip is.
 """
 
 # Create Sankey diagram
-weave(sdd, flows, link_color=QuantitativeScale("value")).to_widget()
+swidget = weave(sdd, flows, link_color=QuantitativeScale("value")).to_widget()
+swidget.auto_save_png(".png")
