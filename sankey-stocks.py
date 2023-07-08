@@ -1,24 +1,23 @@
-import pandas as pd
-import matplotlib.pyplot as plt
-from pySankey.sankey import sankey
+import plotly.graph_objects as go
 
-df = pd.read_csv("WorldCruiseData.csv", sep=",")
+# Using https://plotly.com/python/sankey-diagram/ for documentation
 
-# Create Sankey diagram again
-sankey(
-    left=df["INCOME"], right=df["EXPENSES"], 
-    leftWeight= df["PRICE"], rightWeight=df["PRICE"], 
-    aspect=20, fontsize=20
-)
+"""
+     המספרים במקור וביעד הם מספרים שמציינים את המיקום של איברים במשתנה
+       label
+"""
+fig = go.Figure(data=[go.Sankey(
+    node = dict(
+      pad = 50,
+      thickness = 40,
+      label = ["A1", "A2", "B1", "B2", "C1", "C2"],
+      color = "blue"
+    ),
+    link = dict(
+      source = [0, 1, 0, 2, 3, 3],
+      target = [1, 3, 3, 4, 4, 5],
+      value = [8, 4, 2, 8, 4, 2]
+  ))])
 
-# Get current figure
-fig = plt.gcf()
-
-# Set size in inches
-fig.set_size_inches(6, 6)
-
-# Set the color of the background to white
-fig.set_facecolor("w")
-
-# Save the figure
-fig.savefig("customers-goods.png", bbox_inches="tight", dpi=150)
+fig.update_layout(title_text="Basic Sankey Diagram", font_size=50)
+fig.show()
