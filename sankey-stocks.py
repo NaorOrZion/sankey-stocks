@@ -13,8 +13,6 @@ import re
 
 # Settings Consts
 TICKER_PATTERN = '([A-Za-z]{1,5})(-[A-Za-z]{1,2})?'
-SOURCE = [0, 0, 1, 1, 3, 3, 3, 3, 3, 9, 9]
-TARGET = [1, 2, 3, 9, 4, 5, 6, 7, 8, 10, 11]
 
 # Colors Consts
 RED_WAVE = "#EDA19B"
@@ -54,10 +52,10 @@ while True:
       if not response_data:
          print("Error making the request: The ticker doesn't exists")
          continue
+      
+      date_link = response_data[0]['date']
 
       links = {
-        "DATE":                      response_data[0]['date'],
-
         "REVENUE":                   response_data[0]['revenue'],
         "GROSS_PROFIT":              response_data[0]['grossProfit'],
         "COST_OF_REVENUE":           response_data[0]['costOfRevenue'],
@@ -79,22 +77,22 @@ while True:
       print(link("REVENUE"))
 
       SOURCE = [
-                link("REVENUE"),
-                link("GROSS_PROFIT"),  
-                link("OPERATING_INCOME"), 
-                link("OPERATING_INCOME"), 
-                link("GROSS_PROFIT"), 
-                link("OPERATING_EXPENSES"), 
-                link("OPERATING_EXPENSES"), 
-                link("OPERATING_EXPENSES"), 
-                link("OPERATING_EXPENSES"), 
-                link("OPERATING_EXPENSES"),
-                link("REVENUE")
+                link("REVENUE"),                    # - > GROSS_PROFIT
+                link("GROSS_PROFIT"),               # - > OPERATING_INCOME
+                link("OPERATING_INCOME"),           # - > NET_INCOME
+                link("OPERATING_INCOME"),           # - > TAX_ON_OPERATING_INCOME    
+                link("GROSS_PROFIT"),               # - > OPERATING_EXPENSES
+                link("OPERATING_EXPENSES"),         # - > R_N_D_EXPENSES      
+                link("OPERATING_EXPENSES"),         # - > SELL_GEN_ADMIN_EXPENSES      
+                link("SELL_GEN_ADMIN_EXPENSES"),    # - > GEN_ADMIN_EXPENSES      
+                link("SELL_GEN_ADMIN_EXPENSES"),    # - > SELL_MARKETING_EXPENSES      
+                link("OPERATING_EXPENSES"),         # - > OTHER_OPERATING_EXPENSES     
+                link("REVENUE")                     # - > COST_OF_REVENUE
             ]
       TARGET = [
                 link("GROSS_PROFIT"),
                 link("OPERATING_INCOME"), 
-                link("OPERATING_INCOME"), 
+                link("NET_INCOME"), 
                 link("TAX_ON_OPERATING_INCOME"), 
                 link("OPERATING_EXPENSES"), 
                 link("R_N_D_EXPENSES"), 
@@ -110,7 +108,6 @@ while True:
             pad = 80,
             thickness = 70,
             label = [
-                     f"Date\n{links['DATE']}",
                      f"Revenue\n{numerize.numerize(links['REVENUE'])}", 
                      f"Gross Profit\n{numerize.numerize(links['GROSS_PROFIT'])}",
                      f"Cost of Revenue\n{numerize.numerize(links['COST_OF_REVENUE'])}", 
@@ -148,7 +145,7 @@ while True:
             color=[RED_WAVE if target in [2, 3, 4, 5, 6, 10] else GREEN_WAVE for target in TARGET]
         ))])
 
-      fig.update_layout(title_text=f"{ticker.upper()} Annual financial statment for {links['DATE']}", font_size=30)
+      fig.update_layout(title_text=f"{ticker.upper()} Annual financial statment for {date_link}", font_size=30)
       fig.show()
     else:
       print("Not a valid ticker. A ticker should look like this: 'AAPL' or 'TSLA'")
