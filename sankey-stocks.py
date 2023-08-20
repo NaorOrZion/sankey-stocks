@@ -11,6 +11,9 @@ import re
        label
 """
 
+# Api key
+API_KEY = "6b99cdd3620bba8d52b849d9a1fab7e4"
+
 # Settings Consts
 TICKER_PATTERN = '([A-Za-z]{1,5})(-[A-Za-z]{1,2})?'
 
@@ -29,7 +32,7 @@ print("In this program you can enter a ticker, and the program will\n \
        generate a sankey chart of the company's last annual balance sheet in HTML\n")
 
 while True:
-  print("Choose an option:\n")
+  print("\nWhat would you like to do?")
   print("1. Create a sankey chart")
   print("2. exit")
 
@@ -43,7 +46,7 @@ while True:
     is_ticker_valid = re.fullmatch(TICKER_PATTERN, ticker)
 
     if is_ticker_valid:
-      response = requests.get(f"https://financialmodelingprep.com/api/v3/income-statement/{ticker}?limit=120&apikey=6b99cdd3620bba8d52b849d9a1fab7e4")
+      response = requests.get(f"https://financialmodelingprep.com/api/v3/income-statement/{ticker}?limit=120&apikey={API_KEY}")
       response_data = response.json()
       if "Error Message" in response_data:
         print("Error making the request:", response_data["Error Message"])
@@ -53,28 +56,33 @@ while True:
          print("Error making the request: The ticker doesn't exists")
          continue
       
-      date_link = response_data[0]['date']
+      print("\nWhich annual year would like to view?")
+      for index, data in enumerate(response_data):
+        print(f"{index + 1}. {data['date']}")
+      
+      date_picked = int(input("Option: ")) - 1
+      
+      date_link = response_data[date_picked]['date']
 
       links = {
-        "REVENUE":                   response_data[0]['revenue'],
-        "GROSS_PROFIT":              response_data[0]['grossProfit'],
-        "COST_OF_REVENUE":           response_data[0]['costOfRevenue'],
+        "REVENUE":                   response_data[date_picked]['revenue'],
+        "GROSS_PROFIT":              response_data[date_picked]['grossProfit'],
+        "COST_OF_REVENUE":           response_data[date_picked]['costOfRevenue'],
 
-        "OPERATING_EXPENSES":        response_data[0]['operatingExpenses'],
-        "R_N_D_EXPENSES":            response_data[0]['researchAndDevelopmentExpenses'],
-        "SELL_GEN_ADMIN_EXPENSES":   response_data[0]['sellingGeneralAndAdministrativeExpenses'],
-        "GEN_ADMIN_EXPENSES":        response_data[0]['generalAndAdministrativeExpenses'],
-        "SELL_MARKETING_EXPENSES":   response_data[0]['sellingAndMarketingExpenses'],
-        "OTHER_OPERATING_EXPENSES":  response_data[0]['otherExpenses'],
+        "OPERATING_EXPENSES":        response_data[date_picked]['operatingExpenses'],
+        "R_N_D_EXPENSES":            response_data[date_picked]['researchAndDevelopmentExpenses'],
+        "SELL_GEN_ADMIN_EXPENSES":   response_data[date_picked]['sellingGeneralAndAdministrativeExpenses'],
+        "GEN_ADMIN_EXPENSES":        response_data[date_picked]['generalAndAdministrativeExpenses'],
+        "SELL_MARKETING_EXPENSES":   response_data[date_picked]['sellingAndMarketingExpenses'],
+        "OTHER_OPERATING_EXPENSES":  response_data[date_picked]['otherExpenses'],
 
-        "OPERATING_INCOME":          response_data[0]['operatingIncome'],
-        "TAX_ON_OPERATING_INCOME":   response_data[0]['incomeTaxExpense'],
-        "NET_INCOME":                response_data[0]['netIncome']
+        "OPERATING_INCOME":          response_data[date_picked]['operatingIncome'],
+        "TAX_ON_OPERATING_INCOME":   response_data[date_picked]['incomeTaxExpense'],
+        "NET_INCOME":                response_data[date_picked]['netIncome']
       }
 
-      links_index = list(links.keys())
+      links_index = list(links)
       link = lambda key: links_index.index(key)
-      print(link("REVENUE"))
 
       SOURCE = [
                 link("REVENUE"),                    # - > GROSS_PROFIT
@@ -144,6 +152,18 @@ while True:
                       ],
             color=[RED_WAVE if target in [2, 3, 4, 5, 6, 10] else GREEN_WAVE for target in TARGET]
         ))])
+      
+      print(links['GROSS_PROFIT'], 
+            links['OPERATING_INCOME'], 
+            links['OPERATING_INCOME'], 
+            links['TAX_ON_OPERATING_INCOME'], 
+            links['OPERATING_EXPENSES'], 
+            links['R_N_D_EXPENSES'], 
+            links['SELL_GEN_ADMIN_EXPENSES'], 
+            links['GEN_ADMIN_EXPENSES'], 
+            links['SELL_MARKETING_EXPENSES'], 
+            links['OTHER_OPERATING_EXPENSES'], 
+            links['COST_OF_REVENUE'])
 
       fig.update_layout(title_text=f"{ticker.upper()} Annual financial statment for {date_link}", font_size=30)
       fig.show()
