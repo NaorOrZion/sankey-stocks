@@ -65,20 +65,21 @@ while True:
       date_link = response_data[date_picked]['date']
 
       links = {
-        "REVENUE":                   response_data[date_picked]['revenue'],
-        "GROSS_PROFIT":              response_data[date_picked]['grossProfit'],
-        "COST_OF_REVENUE":           response_data[date_picked]['costOfRevenue'],
+        "REVENUE":                          response_data[date_picked]['revenue'],
+        "GROSS_PROFIT":                     response_data[date_picked]['grossProfit'],
+        "COST_OF_REVENUE":                  response_data[date_picked]['costOfRevenue'],
 
-        "OPERATING_EXPENSES":        response_data[date_picked]['operatingExpenses'],
-        "R_N_D_EXPENSES":            response_data[date_picked]['researchAndDevelopmentExpenses'],
-        "SELL_GEN_ADMIN_EXPENSES":   response_data[date_picked]['sellingGeneralAndAdministrativeExpenses'],
-        "GEN_ADMIN_EXPENSES":        response_data[date_picked]['generalAndAdministrativeExpenses'],
-        "SELL_MARKETING_EXPENSES":   response_data[date_picked]['sellingAndMarketingExpenses'],
-        "OTHER_OPERATING_EXPENSES":  response_data[date_picked]['otherExpenses'],
+        "OPERATING_EXPENSES":               response_data[date_picked]['operatingExpenses'],
+        "R_N_D_EXPENSES":                   response_data[date_picked]['researchAndDevelopmentExpenses'],
+        "SELL_GEN_ADMIN_EXPENSES":          response_data[date_picked]['sellingGeneralAndAdministrativeExpenses'],
+        "GEN_ADMIN_EXPENSES":               response_data[date_picked]['generalAndAdministrativeExpenses'],
+        "SELL_MARKETING_EXPENSES":          response_data[date_picked]['sellingAndMarketingExpenses'],
+        "OTHER_OPERATING_EXPENSES":         response_data[date_picked]['otherExpenses'],
 
-        "OPERATING_INCOME":          response_data[date_picked]['operatingIncome'],
-        "TAX_ON_OPERATING_INCOME":   response_data[date_picked]['incomeTaxExpense'],
-        "NET_INCOME":                response_data[date_picked]['netIncome']
+        "OPERATING_INCOME":                 response_data[date_picked]['operatingIncome'],
+        "TAX_ON_OPERATING_INCOME":          response_data[date_picked]['incomeTaxExpense'],
+        "NET_INCOME":                       response_data[date_picked]['netIncome'],
+        "TOTAL_OTHER_INCOME_EXPENSES_NET":  abs(response_data[date_picked]['totalOtherIncomeExpensesNet'])
       }
 
       links_index = list(links)
@@ -89,6 +90,7 @@ while True:
                 link("GROSS_PROFIT"),               # - > OPERATING_INCOME
                 link("OPERATING_INCOME"),           # - > NET_INCOME
                 link("OPERATING_INCOME"),           # - > TAX_ON_OPERATING_INCOME    
+                link("OPERATING_INCOME"),           # - > TOTAL_OTHER_INCOME_EXPENSES_NET    
                 link("GROSS_PROFIT"),               # - > OPERATING_EXPENSES
                 link("OPERATING_EXPENSES"),         # - > R_N_D_EXPENSES      
                 link("OPERATING_EXPENSES"),         # - > SELL_GEN_ADMIN_EXPENSES      
@@ -102,6 +104,7 @@ while True:
                 link("OPERATING_INCOME"), 
                 link("NET_INCOME"), 
                 link("TAX_ON_OPERATING_INCOME"), 
+                link("TOTAL_OTHER_INCOME_EXPENSES_NET"), 
                 link("OPERATING_EXPENSES"), 
                 link("R_N_D_EXPENSES"), 
                 link("SELL_GEN_ADMIN_EXPENSES"), 
@@ -129,28 +132,30 @@ while True:
                      
                      f"Operating Income\n{numerize.numerize(links['OPERATING_INCOME'])}", 
                      f"Tax\n{numerize.numerize(links['TAX_ON_OPERATING_INCOME'])}", 
-                     f"Net Income\n{numerize.numerize(links['NET_INCOME'])}" 
+                     f"Net Income\n{numerize.numerize(links['NET_INCOME'])}", 
+                     f"Other Income Expenses\n{numerize.numerize(abs(links['TOTAL_OTHER_INCOME_EXPENSES_NET']))}" 
                      ],
-            color = [RED_BAR if bar in [2, 3, 4, 5, 6, 7, 8, 10] else GREEN_BAR \
+            color = [RED_BAR if bar in [2, 3, 4, 5, 6, 7, 8, 10, 12] else GREEN_BAR \
                      if bar != 0 else BLUE_BAR for bar in set(SOURCE + TARGET)]
           ),
           link = dict(
             source = SOURCE,
             target = TARGET,
             value =  [
-                      links['GROSS_PROFIT'], 
-                      links['OPERATING_INCOME'], 
-                      links['OPERATING_INCOME'], 
-                      links['TAX_ON_OPERATING_INCOME'], 
-                      links['OPERATING_EXPENSES'], 
-                      links['R_N_D_EXPENSES'], 
-                      links['SELL_GEN_ADMIN_EXPENSES'], 
-                      links['GEN_ADMIN_EXPENSES'], 
-                      links['SELL_MARKETING_EXPENSES'], 
-                      links['OTHER_OPERATING_EXPENSES'], 
-                      links['COST_OF_REVENUE']
-                      ],
-            color=[RED_WAVE if target in [2, 3, 4, 5, 6, 10] else GREEN_WAVE for target in TARGET]
+                      links['GROSS_PROFIT'],              
+                      links['OPERATING_INCOME'],          
+                      links['NET_INCOME'],                
+                      links['TAX_ON_OPERATING_INCOME'],       
+                      links['TOTAL_OTHER_INCOME_EXPENSES_NET'],       
+                      links['OPERATING_EXPENSES'],          
+                      links['R_N_D_EXPENSES'],                      
+                      links['SELL_GEN_ADMIN_EXPENSES'],               
+                      links['GEN_ADMIN_EXPENSES'],                    
+                      links['SELL_MARKETING_EXPENSES'],                       
+                      links['OTHER_OPERATING_EXPENSES'],            
+                      links['COST_OF_REVENUE']                          
+                      ],                                      
+            color=[RED_WAVE if target in [2, 3, 4, 5, 6, 7, 8, 10, 12] else GREEN_WAVE for target in TARGET]
         ))])
       
       print(links['GROSS_PROFIT'], 
@@ -165,7 +170,7 @@ while True:
             links['OTHER_OPERATING_EXPENSES'], 
             links['COST_OF_REVENUE'])
 
-      fig.update_layout(title_text=f"{ticker.upper()} Annual financial statment for {date_link}", font_size=30)
+      fig.update_layout(title_text=f"{ticker.upper()} Annual financial statment for {date_link}", font_size=20)
       fig.show()
     else:
       print("Not a valid ticker. A ticker should look like this: 'AAPL' or 'TSLA'")
