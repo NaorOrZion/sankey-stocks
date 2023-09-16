@@ -55,6 +55,11 @@ def get_annualy_statement_dates_list(ticker_dict) -> List[str]:
     return annualy_dates
 
 
-ticker_dict = create_request(symbol="TSLA")
-print(get_quarterly_statement_dates_list(ticker_dict))
-print(get_annualy_statement_dates_list(ticker_dict))
+def get_income_statement_by_given_date(ticker_dict, date):
+    '''
+    This function will retrieve an income statement from the ticker_dict by a given date.
+    :params     ticker_dict         -> Dict[str, Dict]
+                date                -> str (format: YYYY-MM-DD)
+    :returns    income_statement    -> Dict[str, Dict]
+    '''
+    pass
