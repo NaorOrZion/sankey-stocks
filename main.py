@@ -125,6 +125,17 @@ def create_links_dict(ticker_dict):
     :params     ticker_dict -> Dict[str, Dict]
     :returns    links       -> Dict[str, int]
     '''
+
+    '''
+    KEEP WRITING FROM HERE ======================================================
+    KEEP WRITING FROM HERE ======================================================
+    KEEP WRITING FROM HERE ======================================================
+    KEEP WRITING FROM HERE ======================================================
+    KEEP WRITING FROM HERE ======================================================
+    KEEP WRITING FROM HERE ======================================================
+    KEEP WRITING FROM HERE ======================================================
+    KEEP WRITING FROM HERE ======================================================
+    '''
     links = {
         "REVENUE":                          ticker_dict['totalRevenue']['raw'],
         "GROSS_PROFIT":                     ticker_dict['grossProfit']['raw'],
