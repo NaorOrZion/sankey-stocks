@@ -1,6 +1,10 @@
 import requests
 from typing import List, Dict
 
+RAPIDAPI_API_KEY = "0c2ac85f22mshebe80e1a88ac076p1a5357jsn9a48d9493f09"
+RAPIDAPI_HOST = "apidojo-yahoo-finance-v1.p.rapidapi.com"
+REQUEST_URL = "https://apidojo-yahoo-finance-v1.p.rapidapi.com/stock/v2/get-financials"
+
 def create_request(symbol, region="US") -> Dict[str, Dict]:
     '''
     This function creates a request to rapidapi.com with an API key in order
@@ -10,47 +14,45 @@ def create_request(symbol, region="US") -> Dict[str, Dict]:
             region (a company's region) -> str
     :returns ticker_dict -> Dict[str, Dict]
     '''
-    url = "https://apidojo-yahoo-finance-v1.p.rapidapi.com/stock/v2/get-financials"
-
     querystring = {"symbol": symbol,"region": region}
 
     headers = {
-        "X-RapidAPI-Key": "0c2ac85f22mshebe80e1a88ac076p1a5357jsn9a48d9493f09",
-        "X-RapidAPI-Host": "apidojo-yahoo-finance-v1.p.rapidapi.com"
+        "X-RapidAPI-Key": RAPIDAPI_API_KEY,
+        "X-RapidAPI-Host": RAPIDAPI_HOST
     }
 
-    response = requests.get(url, headers=headers, params=querystring)
+    response = requests.get(REQUEST_URL, headers=headers, params=querystring)
     ticker_dict = response.json()
 
     return ticker_dict
 
 
-def get_quarterly_statement_dates_list(ticker_dict) -> List[str]:
+def get_quarterly_statement_dates_dict(ticker_dict) -> Dict[str, Dict]:
     '''
     This function gets a ticker's dictionary of a company as a parameter, and returns
-    a list of the last quarterly statement dates.
+    a dictionary of the last quarterly statement dates as a key, and their data as a value.
     :params     ticker_dict     -> dict
-    :returns    quarterly_dates -> List[str]
+    :returns    quarterly_dates -> Dict[str, Dict]
     '''
-    quarterly_dates = []
+    quarterly_dates = {}
 
     for statement in ticker_dict["incomeStatementHistoryQuarterly"]["incomeStatementHistory"]:
-        quarterly_dates.append(statement["endDate"]["fmt"])
+        quarterly_dates[statement["endDate"]["fmt"]] = statement
 
     return quarterly_dates
 
 
-def get_annualy_statement_dates_list(ticker_dict) -> List[str]:
+def get_annualy_statement_dates_dict(ticker_dict) -> Dict[str, Dict]:
     '''
     This function gets a ticker's dictionary of a company as a parameter, and returns
-    a list of the last quarterly statement dates.
+    a dictionary of the last annualy statement dates as a key, and their data as a value.
     :params     ticker_dict     -> dict
-    :returns    quarterly_dates -> List[str]
+    :returns    annualy_dates   -> Dict[str, Dict]
     '''
-    annualy_dates = []
+    annualy_dates = {}
 
     for statement in ticker_dict["incomeStatementHistory"]["incomeStatementHistory"]:
-        annualy_dates.append(statement["endDate"]["fmt"])
+        annualy_dates[statement["endDate"]["fmt"]] = statement
 
     return annualy_dates
 
