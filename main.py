@@ -1,6 +1,5 @@
 import plotly.graph_objects as go
 from numerize import numerize
-import requests
 import re
 
 from income_statement_utils import (create_request, 
@@ -10,14 +9,12 @@ from income_statement_utils import (create_request,
 
 
 """
-  # Using https://plotly.com/python/sankey-diagram/ for documentation
+This project was designed to visualize a company's income statement in a way that 
+even a 10 years old kid could understand it.
 
-     המספרים במקור וביעד הם מספרים שמציינים את המיקום של איברים במשתנה
-       label
+Using https://plotly.com/python/sankey-diagram/ for waves documentation.
+Using Rapidapi.com for yahoo finance api.
 """
-
-# Api key
-API_KEY = "6b99cdd3620bba8d52b849d9a1fab7e4"
 
 # Settings Consts
 TICKER_PATTERN = '([A-Za-z]{1,5})(-[A-Za-z]{1,2})?'
@@ -35,7 +32,7 @@ BLUE_BAR = "#4285F4"
 
 print("This is the Sankey-Stock program!")
 print("In this program you can enter a ticker, and the program will\n \
-       generate a sankey chart of the company's last annual balance sheet in HTML\n")
+       generate a sankey chart of the company's income statement in an HTML page.\n")
 
 def handle_usr_input():
     while True:
@@ -79,21 +76,28 @@ def handle_usr_input():
                 total_dates_list =          quarterly_dates_list + annualy_dates_list
                 dates_index =               1
 
+                # Print quarterly dates options
                 print("\nQuarterly dates:")
                 for index_q in range(len(quarterly_dates_list)):
                     print(f"{dates_index}. {quarterly_dates_list[index_q]}")
                     dates_index += 1
 
+                # Print annualy dates options
                 print("\nAnnualy dates:")
                 for index_a in range(len(annualy_dates_list)):
                     print(f"{dates_index}. {annualy_dates_list[index_a]}")
                     dates_index += 1
                 
+                # Check whether the user's choice is valid - if not, repeat loop.
                 user_report_choice = is_report_choice_valid(index=dates_index)
                 if user_report_choice is False: continue
 
+                # Store the ticker dictionary with all it's data according to user's choice.
                 ticker_dict = total_dates_dict[total_dates_list[user_report_choice - 1]]
+
+                # Create a dictionary called "links" - to attach a values to their title.
                 links = create_links_dict(ticker_dict=ticker_dict)
+
         else:
             print("Please choose a valid option!\n")
             continue
