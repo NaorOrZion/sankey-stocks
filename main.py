@@ -93,11 +93,83 @@ def handle_usr_input():
                 if user_report_choice is False: continue
 
                 # Store the ticker dictionary with all it's data according to user's choice.
-                ticker_dict = total_dates_dict[total_dates_list[user_report_choice - 1]]
+                report_date = total_dates_list[user_report_choice - 1]
+                ticker_dict = total_dates_dict[report_date]
 
                 # Create a dictionary called "links" - to attach a values to their title.
                 links = create_links_dict(ticker_dict=ticker_dict)
 
+                links_index = list(links)
+                link = lambda key: links_index.index(key)
+
+                SOURCE = [
+                    link("REVENUE"),                    # - > GROSS_PROFIT
+                    link("GROSS_PROFIT"),               # - > OPERATING_INCOME
+                    link("OPERATING_INCOME"),           # - > NET_INCOME
+                    link("OPERATING_INCOME"),           # - > TAX_ON_OPERATING_INCOME   
+                    link("OPERATING_INCOME"),           # - > TOTAL_OTHER_INCOME_EXPENSES_NET    
+                    link("GROSS_PROFIT"),               # - > OPERATING_EXPENSES
+                    link("OPERATING_EXPENSES"),         # - > R_N_D_EXPENSES      
+                    link("OPERATING_EXPENSES"),         # - > SELL_GEN_ADMIN_EXPENSES      
+                    link("OPERATING_EXPENSES"),         # - > OTHER_OPERATING_EXPENSES     
+                    link("REVENUE")                     # - > COST_OF_REVENUE
+                ]
+                
+                TARGET = [
+                    link("GROSS_PROFIT"),
+                    link("OPERATING_INCOME"), 
+                    link("NET_INCOME"), 
+                    link("TAX_ON_OPERATING_INCOME"), 
+                    link("TOTAL_OTHER_INCOME_EXPENSES_NET"), 
+                    link("OPERATING_EXPENSES"), 
+                    link("R_N_D_EXPENSES"), 
+                    link("SELL_GEN_ADMIN_EXPENSES"), 
+                    link("OTHER_OPERATING_EXPENSES"),
+                    link("COST_OF_REVENUE")
+                ]
+
+                fig = go.Figure(data=[go.Sankey(
+                node = dict(
+                pad = 80,
+                thickness = 70,
+                label = [
+                        f"Revenue\n{links['REVENUE']['fmt']}", 
+                        f"Gross Profit\n{links['GROSS_PROFIT']['fmt']}",
+                        f"Cost of Revenue\n{links['COST_OF_REVENUE']['fmt']}", 
+
+                        f"Operating Expenses\n{links['OPERATING_EXPENSES']['fmt']}", 
+                        f"Research & \nDevelopment\n{links['R_N_D_EXPENSES']['fmt']}", 
+                        f"Selling & \nGeneral &\nAdmin\n{links['SELL_GEN_ADMIN_EXPENSES']['fmt']}", 
+                        f"Other\n{links['OTHER_OPERATING_EXPENSES']['fmt'] if links['OTHER_OPERATING_EXPENSES'] else '0'}", 
+                        
+                        f"Operating Income\n{links['OPERATING_INCOME']['fmt']}", 
+                        f"Tax\n{links['TAX_ON_OPERATING_INCOME']['fmt']}", 
+                        f"Net Income\n{links['NET_INCOME']['fmt']}", 
+                        f"Other Income Expenses\n{links['TOTAL_OTHER_INCOME_EXPENSES_NET']['fmt']}" 
+                        ],
+
+                color = [RED_BAR if bar in [2, 3, 4, 5, 7, 9] else GREEN_BAR \
+                        if bar != 0 else BLUE_BAR for bar in set(SOURCE + TARGET)]),
+                link = dict(
+                    source = SOURCE,
+                    target = TARGET,
+                    value =  [
+                            links['GROSS_PROFIT']['raw'],              
+                            links['OPERATING_INCOME']['raw'],          
+                            links['NET_INCOME']['raw'],                
+                            abs(links['TAX_ON_OPERATING_INCOME']['raw']),       
+                            links['TOTAL_OTHER_INCOME_EXPENSES_NET']['raw'],       
+                            links['OPERATING_EXPENSES']['raw'],          
+                            links['R_N_D_EXPENSES']['raw'],                      
+                            links['SELL_GEN_ADMIN_EXPENSES']['raw'],                                    
+                            (links['OTHER_OPERATING_EXPENSES']['raw'] if links['OTHER_OPERATING_EXPENSES'] else 0),            
+                            links['COST_OF_REVENUE']['raw']                          
+                            ],                                      
+                    color=[RED_WAVE if target in [2, 3, 4, 5, 7, 9] else GREEN_WAVE for target in TARGET]
+                ))])
+
+            fig.update_layout(title_text=f"{ticker.upper()} Financial statment for {report_date}", font_size=20)
+            fig.show()
         else:
             print("Please choose a valid option!\n")
             continue
@@ -129,31 +201,20 @@ def create_links_dict(ticker_dict):
     :params     ticker_dict -> Dict[str, Dict]
     :returns    links       -> Dict[str, int]
     '''
-
-    '''
-    KEEP WRITING FROM HERE ======================================================
-    KEEP WRITING FROM HERE ======================================================
-    KEEP WRITING FROM HERE ======================================================
-    KEEP WRITING FROM HERE ======================================================
-    KEEP WRITING FROM HERE ======================================================
-    KEEP WRITING FROM HERE ======================================================
-    KEEP WRITING FROM HERE ======================================================
-    KEEP WRITING FROM HERE ======================================================
-    '''
     links = {
-        "REVENUE":                          ticker_dict['totalRevenue']['raw'],
-        "GROSS_PROFIT":                     ticker_dict['grossProfit']['raw'],
-        "COST_OF_REVENUE":                  ticker_dict['costOfRevenue']['raw'],
+        "REVENUE":                          ticker_dict['totalRevenue'],
+        "GROSS_PROFIT":                     ticker_dict['grossProfit'],
+        "COST_OF_REVENUE":                  ticker_dict['costOfRevenue'],
 
-        "OPERATING_EXPENSES":               ticker_dict['totalOperatingExpenses']['raw'],
-        "R_N_D_EXPENSES":                   ticker_dict['researchDevelopment']['raw'],
-        "SELL_GEN_ADMIN_EXPENSES":          ticker_dict['sellingGeneralAdministrative']['raw'],
-        "OTHER_OPERATING_EXPENSES":         ticker_dict['otherOperatingExpenses']['raw'],
+        "OPERATING_EXPENSES":               ticker_dict['totalOperatingExpenses'],
+        "R_N_D_EXPENSES":                   ticker_dict['researchDevelopment'],
+        "SELL_GEN_ADMIN_EXPENSES":          ticker_dict['sellingGeneralAdministrative'],
+        "OTHER_OPERATING_EXPENSES":         ticker_dict['otherOperatingExpenses'],
 
-        "OPERATING_INCOME":                 ticker_dict['operatingIncome']['raw'],
-        "TAX_ON_OPERATING_INCOME":          ticker_dict['incomeTaxExpense']['raw'],
-        "NET_INCOME":                       ticker_dict['netIncome']['raw'],
-        "TOTAL_OTHER_INCOME_EXPENSES_NET":  abs(ticker_dict['totalOtherIncomeExpensesNet']['raw'])
+        "OPERATING_INCOME":                 ticker_dict['operatingIncome'],
+        "TAX_ON_OPERATING_INCOME":          ticker_dict['incomeTaxExpense'],
+        "NET_INCOME":                       ticker_dict['netIncome'],
+        "TOTAL_OTHER_INCOME_EXPENSES_NET":  ticker_dict['totalOtherIncomeExpenseNet']
     }
 
     return links

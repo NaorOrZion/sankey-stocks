@@ -157,18 +157,6 @@ while True:
                       ],                                      
             color=[RED_WAVE if target in [2, 3, 4, 5, 6, 7, 8, 10, 12] else GREEN_WAVE for target in TARGET]
         ))])
-      
-      print(links['GROSS_PROFIT'], 
-            links['OPERATING_INCOME'], 
-            links['OPERATING_INCOME'], 
-            links['TAX_ON_OPERATING_INCOME'], 
-            links['OPERATING_EXPENSES'], 
-            links['R_N_D_EXPENSES'], 
-            links['SELL_GEN_ADMIN_EXPENSES'], 
-            links['GEN_ADMIN_EXPENSES'], 
-            links['SELL_MARKETING_EXPENSES'], 
-            links['OTHER_OPERATING_EXPENSES'], 
-            links['COST_OF_REVENUE'])
 
       fig.update_layout(title_text=f"{ticker.upper()} Annual financial statment for {date_link}", font_size=20)
       fig.show()
