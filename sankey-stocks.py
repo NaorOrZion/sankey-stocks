@@ -13,10 +13,12 @@ import re
 
   To the API documentation: "https://site.financialmodelingprep.com/developer/docs/".
   To the plotly charts documentation: "https://plotly.com/python/sankey-diagram/".
+
+  Author: Naor Or-Zion
 """
 
 # Api key
-API_KEY = "6b99cdd3620bba8d52b849d9a1fab7e4"
+API_KEY = ""
 
 # Settings Consts
 TICKER_PATTERN = '([A-Za-z]{1,5})(-[A-Za-z]{1,2})?'
@@ -97,6 +99,12 @@ def get_figure(values_dict, source, target):
               target -> List[int]
     Returns:  fig    -> Fig Object
   """
+  # Create a list out of the dictionary.
+  values_index = list(values_dict)
+
+  # Create a lambda function to retrieve a key's index by a key's value.
+  value = lambda key: values_index.index(key)
+
   fig = go.Figure(data=[go.Sankey(
           node = dict(
           pad = 80,
@@ -118,8 +126,18 @@ def get_figure(values_dict, source, target):
                     f"Net Income\n{numerize.numerize(values_dict['NET_INCOME'])}", 
                     f"Other Income Expenses\n{numerize.numerize(abs(values_dict['TOTAL_OTHER_INCOME_EXPENSES_NET']))}" 
                     ],
-          color = [RED_BAR if bar in [2, 3, 4, 5, 6, 7, 8, 10, 12] else GREEN_BAR \
-                    if bar != 0 else BLUE_BAR for bar in set(source + target)]
+          color = [RED_BAR if bar in 
+                   [value('COST_OF_REVENUE'), 
+                    value('OPERATING_EXPENSES'), 
+                    value('R_N_D_EXPENSES'), 
+                    value('SELL_GEN_ADMIN_EXPENSES'), 
+                    value('GEN_ADMIN_EXPENSES'), 
+                    value('SELL_MARKETING_EXPENSES'), 
+                    value('OTHER_OPERATING_EXPENSES'), 
+                    value('TAX_ON_OPERATING_INCOME'), 
+                    value('TOTAL_OTHER_INCOME_EXPENSES_NET'), 
+                  ] \
+                   else GREEN_BAR if bar != 0 else BLUE_BAR for bar in set(source + target)]
         ),
         link = dict(
           source = source,
