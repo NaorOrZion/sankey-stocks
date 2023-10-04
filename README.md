@@ -20,7 +20,7 @@ Explore the API documentation at "https://site.financialmodelingprep.com/develop
 [![Income-Statement](https://i.ibb.co/HpQsMd7/Newplot-1.png)](https://ibb.co/jZF2xRh)
 
 **Please notice**
-- An optimal sankey chart will be created only when the company is profitable (Net income greater than 0$).
+- An optimal sankey chart will be created only when the company is profitable.
 - A chart will be displayed in html page with unordered dynamic nodes that you can drag & drop as you wish.
 - Not all companies have a good chart, that's because some of them post their data differently.
 - When you are asked to write a ticker, please remember that a ticker is the "name" of the stock and not the name of the company.
