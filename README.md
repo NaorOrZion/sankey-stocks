@@ -65,4 +65,4 @@ python sankey-stocks.py
 You are done!
 Now just follow the program.
 
-**Free Software, Hell Yeah!**
+**Free Software!**
