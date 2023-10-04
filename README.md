@@ -27,7 +27,7 @@ Explore the API documentation at "https://site.financialmodelingprep.com/develop
 
 ## Installation
 
-##### Requirements
+#### Requirements
 - Python 3
 
 Clone the repository from github to a designated folder:
