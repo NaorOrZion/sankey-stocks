@@ -1,7 +1,15 @@
+"""
+sankey-stocks.py
+Author: Naor Or-Zion
+"""
+
 import plotly.graph_objects as go
+
 from numerize import numerize
 import requests
 import re
+
+from typing import Dict, List
 
 
 """
@@ -14,7 +22,6 @@ import re
   To the API documentation: "https://site.financialmodelingprep.com/developer/docs/".
   To the plotly charts documentation: "https://plotly.com/python/sankey-diagram/".
 
-  Author: Naor Or-Zion
 """
 
 # Api key
@@ -22,6 +29,8 @@ API_KEY = ""
 
 # Settings Consts
 TICKER_PATTERN = "([A-Za-z]{1,5})(-[A-Za-z]{1,2})?"
+
+INCOME_STATEMENT_URL = "https://financialmodelingprep.com/api/v3/income-statement"
 
 # Colors Consts
 RED_WAVE = "#EDA19B"
@@ -64,6 +73,8 @@ def handle_user_input():
 
         # Retrieve income statement data
         income_statement_data = get_income_statement_data(ticker=ticker)
+        import IPython
+        IPython.set_trace()
         if not income_statement_data:
             continue
 
@@ -96,15 +107,15 @@ def handle_user_input():
         fig.show()
 
 
-def get_figure(values_dict, source, target):
+def get_figure(values_dict: Dict[str, int], source: List[int], target: List[int]) -> go.Figure:
     """
     This funciton creates a figure by the giving data.
     It needs a list of source indexes and target indexes.
     Every source is a block/node just like a target.
     The values_dict is a dictionary indicating what is the value for every node or wave.
-    @params:  values_dict  -> Dict[str, int]
-              source -> List[int]
-              target -> List[int]
+    @params:  values_dict  -> Explain
+              source -> Explain
+              target -> Explain
     Returns:  fig    -> Fig Object
     """
     # Create a list out of the dictionary.
@@ -265,7 +276,7 @@ def get_income_statement_data(ticker):
     Return:   response_data -> Dict[str, int]
     """
     response = requests.get(
-        f"https://financialmodelingprep.com/api/v3/income-statement/{ticker}?limit=120&apikey={API_KEY}"
+        f"{INCOME_STATEMENT_URL}/{ticker}?limit=120&apikey={API_KEY}"
     )
     response_data = response.json()
 
