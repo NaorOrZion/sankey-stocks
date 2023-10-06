@@ -9,7 +9,7 @@ from numerize import numerize
 import requests
 import os
 
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Union, Tuple
 
 
 """
@@ -26,6 +26,7 @@ from typing import Dict, List, Optional
 
 # API key
 SANKEY_STOCKS_API_KEY = os.getenv("SANKEY_STOCKS_API_KEY")
+SANKEY_STOCKS_API_KEY = "6b99cdd3620bba8d52b849d9a1fab7e4"
 
 
 INCOME_STATEMENT_URL = "https://financialmodelingprep.com/api/v3/income-statement"
@@ -57,6 +58,7 @@ def handle_user_input():
 
         elif option == "1":
             ticker = input("Please enter a ticker: ")
+
         else:
             print("Please choose a valid option!\n")
             continue
@@ -64,16 +66,12 @@ def handle_user_input():
         # Retrieve income statement data
         income_statement_data = get_income_statement_data(ticker=ticker)
 
+        # If the income_statement_data is none, repeat the loop.
         if not income_statement_data:
             continue
 
-        # Print the options of the last 4 years of company's income statement
-        print("\nWhich annual year would like to view?")
-        for index, data in enumerate(income_statement_data):
-            print(f"{index + 1}. {data['date']}")
-
         # User annual year preference
-        date_picked = int(input("Option: ")) - 1
+        date_picked = manage_annual_options(income_statement_data=income_statement_data)
 
         # Get the data for the sankey chart.
         source, target, links = get_sankey_chart_data(
@@ -104,10 +102,11 @@ def get_figure(
     It needs a list of source indexes and target indexes.
     Every source is a block/node just like a target.
     The values_dict is a dictionary indicating what is the value for every node or wave.
-    @params:  values_dict  -> Explain
-              source -> Explain
-              target -> Explain
-    Returns:  fig    -> Fig Object
+    @params:  values_dict  -> a dict containing the labels for every node and their values.
+              source -> list of indexes representing the source nodes,
+              target -> list of indexes representing the target nodes,
+    Returns:  fig    -> Fig Object which stores all the data for a sankey chart (The fig.show() 
+                            method can use this data and create a chart from it).
     """
     # Create a list out of the dictionary.
     values_index = list(values_dict)
@@ -187,14 +186,14 @@ def get_figure(
     return fig
 
 
-def get_sankey_chart_data(income_statement_data):
+def get_sankey_chart_data(income_statement_data: Dict[str, Union[str, int]]) -> Tuple(List[int], List[int], Dict[str, int]):
     """
     Create data such as source nodes and target nodes indexes so we can use later to create the sankey chart.
     Additionally, create a dictionary that stores the value of each block to be used later in the sankey chart.
-    @params:  income_statement_data -> Dict[str, Union[str, int]]
-    Returns:  source                -> List[int]
-              target                -> List[int]
-              links                 -> Dict[str, int]
+    @params:  income_statement_data -> a dict that has in it all the API response data of a chosen date.
+    Returns:  source                -> list of indexes representing the source nodes,
+              target                -> list of indexes representing the target nodes,
+              links                 -> a dict with minimized data which represents the labels of nodes and their values.
     """
 
     links = {
@@ -259,12 +258,50 @@ def get_sankey_chart_data(income_statement_data):
     return source, target, links
 
 
+def manage_annual_options(income_statement_data: Dict[str, Union[str, int]]) -> int:
+    """
+    Get the income statement data, print all the years available from the dictionary.
+    Eventually let the user choose a year he desires to watch and return the year he picked as an int.
+
+    @params:  income_statement_data -> The API reponse data, in a dictionary format.
+    Return:   date_picked -> An int the user picked, representing the index of a year in the income_statement_data dict. 
+    """
+    # Get the number of dates avilable
+    dates_range = len(income_statement_data)
+
+    while True:
+      # Print the options of the last 4 years of company's income statement
+      print("\nWhich annual year would like to view?")
+      for index, data in enumerate(income_statement_data):
+          print(f"{index + 1}. {data['date']}")
+
+      # User annual year preference
+      date_picked = input("Option: ")
+
+      # Repeat loop if user input is not digits
+      if not date_picked.isdigit():
+          print("\nPlease choose a valid year!")
+          continue
+      
+      # Make the date_picked a number and decrement it by 1 (index causes)
+      date_picked = int(date_picked) - 1
+
+      # Break loop if user input not in range
+      if 0 >= date_picked or date_picked > dates_range - 1:
+          print("\nPlease choose a valid year!")
+          continue
+      
+      break
+      
+    return date_picked
+
+
 def get_income_statement_data(ticker: str) -> Optional[Dict[str, int]]:
     """
     Gets the income statement data for the given ticker from the Financial Modeling Prep API.
-    @params:  ticker        -> Explain,
+    @params:  ticker        -> a stock's ticker ("AAPL", "TSLA"...).
 
-    Return:   response_data -> Explain
+    Return:   response_data -> can be none if there is an error, or a dict containing all the avilable data from the API request.
     """
     response = requests.get(
         f"{INCOME_STATEMENT_URL}/{ticker}?limit=120&apikey={SANKEY_STOCKS_API_KEY}"
