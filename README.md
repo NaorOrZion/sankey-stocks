@@ -7,7 +7,7 @@ Author: Naor Or-Zion
 Welcome to the Sankey-Stocks program!
 This tool has been crafted to enable users of all ages, even 10-year-old enthusiasts, to effortlessly visualize income statements. The annual data is sourced from "https://site.financialmodelingprep.com/" so make sure to sign up on the website to obtain your API key.
 
-You can input the API key directly into the designated variable (named "API_KEY", found in sankey-stocks.py file) after reviewing the instructions, or opt for a more secure approach by retrieving it through an environment variable.
+You can input the API key directly into the designated variable (named "SANKEY_STOCKS_API_KEY", found in sankey-stocks.py file) after reviewing the instructions, or opt for a more secure approach by retrieving it through an environment variable.
 
 Explore the API documentation at "https://site.financialmodelingprep.com/developer/docs/" for a comprehensive understanding. Additionally, delve into Plotly's chart documentation at "https://plotly.com/python/sankey-diagram/" to unlock the full potential of dynamic visualizations.
 
