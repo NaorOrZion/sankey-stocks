@@ -9,7 +9,7 @@ from numerize import numerize
 import requests
 import re
 
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 
 """
@@ -73,8 +73,7 @@ def handle_user_input():
 
         # Retrieve income statement data
         income_statement_data = get_income_statement_data(ticker=ticker)
-        import IPython
-        IPython.set_trace()
+    
         if not income_statement_data:
             continue
 
@@ -200,7 +199,7 @@ def get_sankey_chart_data(income_statement_data):
     """
     Create data such as source nodes and target nodes indexes so we can use later to create the sankey chart.
     Additionally, create a dictionary that stores the value of each block to be used later in the sankey chart.
-    @params:  income_statement_data -> Dict[str, str/int]
+    @params:  income_statement_data -> Dict[str, Union[str, int]]
     Returns:  source                -> List[int]
               target                -> List[int]
               links                 -> Dict[str, int]
@@ -268,12 +267,12 @@ def get_sankey_chart_data(income_statement_data):
     return source, target, links
 
 
-def get_income_statement_data(ticker):
+def get_income_statement_data(ticker: str) -> Optional[Dict[str, int]]:
     """
     Gets the income statement data for the given ticker from the Financial Modeling Prep API.
-    @params:  ticker        -> str,
-              api_key       -> str.
-    Return:   response_data -> Dict[str, int]
+    @params:  ticker        -> Explain,
+
+    Return:   response_data -> Explain
     """
     response = requests.get(
         f"{INCOME_STATEMENT_URL}/{ticker}?limit=120&apikey={API_KEY}"
