@@ -26,7 +26,6 @@ from typing import Dict, List, Optional, Union, Tuple
 
 # API key
 SANKEY_STOCKS_API_KEY = os.getenv("SANKEY_STOCKS_API_KEY")
-print(SANKEY_STOCKS_API_KEY)
 
 # General Consts
 INCOME_STATEMENT_URL = "https://financialmodelingprep.com/api/v3/income-statement"
