@@ -8,6 +8,7 @@ import plotly.graph_objects as go
 from numerize import numerize
 import requests
 import re
+import os
 
 from typing import Dict, List, Optional
 
@@ -24,11 +25,12 @@ from typing import Dict, List, Optional
 
 """
 
-# Api key
-API_KEY = ""
+# API key
+SANKEY_STOCKS_API_KEY = os.getenv("SANKEY_STOCKS_API_KEY")
 
 # Settings Consts
 TICKER_PATTERN = "([A-Za-z]{1,5})(-[A-Za-z]{1,2})?"
+
 
 INCOME_STATEMENT_URL = "https://financialmodelingprep.com/api/v3/income-statement"
 
@@ -73,7 +75,7 @@ def handle_user_input():
 
         # Retrieve income statement data
         income_statement_data = get_income_statement_data(ticker=ticker)
-    
+
         if not income_statement_data:
             continue
 
@@ -91,7 +93,7 @@ def handle_user_input():
         )
 
         # Create a figure
-        fig = get_figure(values_dict=links, source=source, target=target)
+        fig = get_figure(source=source, target=target, values_dict=links)
 
         # Get the date from the income_statement_data.
         date_link = income_statement_data[date_picked]["date"]
@@ -106,7 +108,9 @@ def handle_user_input():
         fig.show()
 
 
-def get_figure(values_dict: Dict[str, int], source: List[int], target: List[int]) -> go.Figure:
+def get_figure(
+    values_dict: Dict[str, int], source: List[int], target: List[int]
+) -> go.Figure:
     """
     This funciton creates a figure by the giving data.
     It needs a list of source indexes and target indexes.
@@ -275,7 +279,7 @@ def get_income_statement_data(ticker: str) -> Optional[Dict[str, int]]:
     Return:   response_data -> Explain
     """
     response = requests.get(
-        f"{INCOME_STATEMENT_URL}/{ticker}?limit=120&apikey={API_KEY}"
+        f"{INCOME_STATEMENT_URL}/{ticker}?limit=120&apikey={SANKEY_STOCKS_API_KEY}"
     )
     response_data = response.json()
 
