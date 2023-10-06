@@ -26,6 +26,7 @@ from typing import Dict, List, Optional, Union, Tuple
 
 # API key
 SANKEY_STOCKS_API_KEY = os.getenv("SANKEY_STOCKS_API_KEY")
+print(SANKEY_STOCKS_API_KEY)
 
 # General Consts
 INCOME_STATEMENT_URL = "https://financialmodelingprep.com/api/v3/income-statement"
@@ -185,7 +186,7 @@ def get_figure(
     return fig
 
 
-def get_sankey_chart_data(income_statement_data: Dict[str, Union[str, int]]) -> Tuple(List[int], List[int], Dict[str, int]):
+def get_sankey_chart_data(income_statement_data: Dict[str, Union[str, int]]) -> Tuple[List[int], List[int], Dict[str, int]]:
     """
     Create data such as source nodes and target nodes indexes so we can use later to create the sankey chart.
     Additionally, create a dictionary that stores the value of each block to be used later in the sankey chart.
