@@ -7,7 +7,6 @@ import plotly.graph_objects as go
 
 from numerize import numerize
 import requests
-import re
 import os
 
 from typing import Dict, List, Optional
@@ -27,9 +26,6 @@ from typing import Dict, List, Optional
 
 # API key
 SANKEY_STOCKS_API_KEY = os.getenv("SANKEY_STOCKS_API_KEY")
-
-# Settings Consts
-TICKER_PATTERN = "([A-Za-z]{1,5})(-[A-Za-z]{1,2})?"
 
 
 INCOME_STATEMENT_URL = "https://financialmodelingprep.com/api/v3/income-statement"
@@ -61,16 +57,8 @@ def handle_user_input():
 
         elif option == "1":
             ticker = input("Please enter a ticker: ")
-            is_ticker_valid = re.fullmatch(TICKER_PATTERN, ticker)
-
         else:
             print("Please choose a valid option!\n")
-            continue
-
-        if not is_ticker_valid:
-            print(
-                "Not a valid ticker. A ticker should look like this: 'AAPL' or 'TSLA'"
-            )
             continue
 
         # Retrieve income statement data
