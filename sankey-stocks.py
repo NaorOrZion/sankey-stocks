@@ -286,7 +286,7 @@ def manage_annual_options(income_statement_data: Dict[str, Union[str, int]]) -> 
       date_picked = int(date_picked) - 1
 
       # Break loop if user input not in range
-      if 0 >= date_picked or date_picked > dates_range - 1:
+      if 0 > date_picked or date_picked > dates_range - 1:
           print("\nPlease choose a valid year!")
           continue
       
